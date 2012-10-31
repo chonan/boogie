@@ -5,6 +5,7 @@
  *
  *  Changelog:
  *      v0.1 - Initial experimental release
+ *      v0.2 - Migrate to Kernel v3.5
  *
  */
 
@@ -34,7 +35,7 @@
 /*
  * Version Information
  */
-#define DRIVER_VERSION "v0.1"
+#define DRIVER_VERSION "v0.2"
 #define DRIVER_DESC    "USB Boogie Board tablet driver"
 #define DRIVER_LICENSE "GPL"
 #define DRIVER_AUTHOR  "Hiroshi Chonan <chonan@pid0.org>"
@@ -50,6 +51,7 @@ struct usb_boogie {
 	char name[128];
 	char phys[64];
 	struct usb_device *usbdev;
+	struct usb_interface *intf;
 	struct input_dev *input;
 	struct urb *irq;
 
@@ -62,6 +64,7 @@ static void usb_boogie_irq(struct urb *urb)
 	struct usb_boogie *boogie = urb->context;
 	unsigned char *data = boogie->data;
 	struct input_dev *dev = boogie->input;
+	struct usb_interface *intf = boogie->intf;
 	int status;
 
 	switch (urb->status) {
@@ -92,7 +95,8 @@ static void usb_boogie_irq(struct urb *urb)
 resubmit:
 	status = usb_submit_urb(urb, GFP_ATOMIC);
 	if (status)
-		err("can't resubmit intr, %s-%s/input0, status %d",
+		dev_err(&intf->dev,
+			"can't resubmit intr, %s-%s/input0, status %d",
 			boogie->usbdev->bus->bus_name, boogie->usbdev->devpath, status);
 
 }
@@ -157,6 +161,7 @@ static int usb_boogie_probe(struct usb_interface *intf, const struct usb_device_
 	}
 
 	boogie->usbdev = dev;
+	boogie->intf = intf;
 	boogie->input = input_dev;
 
 	if (dev->manufacturer) {

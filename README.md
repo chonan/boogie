@@ -57,3 +57,7 @@ ChangeLog
 
 * Initial experimental release
 
+## 0.2 (2012-10-31)
+
+* Migrate to Kernel v3.5
+

@@ -1,7 +1,7 @@
 TARGET := boogie.ko
 VERBOSITY = 0
-REL_VERSION = "0.0.1"
-REL_DATE = "2012-09-12"
+REL_VERSION = "0.2"
+REL_DATE = "2012-10-31"
 EXTRA_CFLAGS += -Wformat=2
 
 all: ${TARGET}

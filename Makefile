@@ -7,15 +7,15 @@ EXTRA_CFLAGS += -Wformat=2
 all: ${TARGET}
 
 boogie.ko: boogie.c
-	make -C /lib/modules/`uname -r`/build M=`pwd` V=$(VERBOSITY) modules
+	make -C /lib/modules/$(shell uname -r)/build M=${shell pwd} V=$(VERBOSITY) modules
 
 clean:
-	make -C /lib/modules/`uname -r`/build M=`pwd` V=$(VERBOSITY) clean
+	make -C /lib/modules/$(shell uname -r)/build M=${shell pwd} V=$(VERBOSITY) clean
 
 clean-files := *.o *.ko *.mod.[co] *~ version.h
 
 obj-m := boogie.o
 
 install: $(TARGET)
-	install -m 644 $(TARGET) /lib/modules/`uname -r`/kernel/drivers/input/tablet
+	install -m 644 $(TARGET) /lib/modules/$(shell uname -r)/kernel/drivers/input/tablet
 	depmod -a
